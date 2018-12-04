@@ -4,6 +4,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -106,8 +108,24 @@ public class Tuesday extends JFrame implements ActionListener {
 		add(panel2);
 	}
 
-	public double findRoot(double number,double root) {
-		return(0.0);
+	public BigDecimal findRoot(BigDecimal number,BigDecimal root) {
+		BigDecimal guess = new BigDecimal("1.0");
+		BigDecimal newGuess = new BigDecimal("0.5");
+		BigDecimal tolerance = new BigDecimal("0.00000000000005");
+		
+		while (guess.subtract(newGuess).abs().compareTo(tolerance) > 0) {
+			guess = newGuess;
+			
+			BigDecimal num = root.subtract(BigDecimal.ONE);
+			num = num.multiply(guess.pow(root.intValue()));
+			num = num.add(number);
+			
+			BigDecimal denom = root.multiply(guess.pow(root.intValue() - 1));
+			
+			newGuess = num.divide(denom,RoundingMode.HALF_UP);			
+		}
+		
+		return(newGuess);
 	}
 	
 	public double findSine(double angle) {
@@ -145,7 +163,7 @@ public class Tuesday extends JFrame implements ActionListener {
 			if (root.getText().trim().equals(""))
 				root.setText("1.0");
 			
-			rootOutput.setText(String.valueOf(findRoot(Double.parseDouble(number.getText()),Double.parseDouble(root.getText()))));
+			rootOutput.setText(String.valueOf(findRoot(new BigDecimal(number.getText()),new BigDecimal(root.getText()))));
 		} else if (arg0.getSource() == findTrigFunctions) {
 			if (angle.getText().trim().equals(""))
 				angle.setText("0.0");
